@@ -64,37 +64,14 @@ class TestToRecords:
             "coordinates": Point(x=60.5, y=40.5),
         }
 
-    def test_string_wildcard_columns(self, dataset: EventDataset):
-        """
-        Make sure it's possible to specify wildcard pattern to match attributes.
-        """
-
-        records = dataset.filter("pass").to_records(
-            "timestamp",
-            "player_id",
-            "coordinates_*",
-            DistanceToGoalTransformer(),
-            DistanceToOwnGoalTransformer(),
-            AngleToGoalTransformer(),
-        )
-        assert records[0] == {
-            "timestamp": timedelta(seconds=0.098),
-            "player_id": "6581",
-            "coordinates_x": 60.5,
-            "coordinates_y": 40.5,
-            "distance_to_goal": 59.50210080324896,
-            "distance_to_own_goal": 60.502066080424065,
-            "angle_to_goal": 89.49633196102769,
-        }
-
     @pytest.mark.parametrize(
         "coordinate_system", ["statsbomb", "tracab", "opta"]
     )
-    def test_angle_to_goal_transformer(
+    def test_string_wildcard_columns(
         self, event_data: Path, lineup_data: Path, coordinate_system
     ):
         """
-        Make sure calculation of the angle is consistent in different coordinate systems.
+        Make sure it's possible to specify wildcard pattern to match attributes.
         """
         dataset = statsbomb.load(
             lineup_data=lineup_data,
@@ -103,9 +80,15 @@ class TestToRecords:
         )
         records = dataset.filter("pass").to_records(
             "timestamp",
+            "player_id",
+            DistanceToGoalTransformer(),
+            DistanceToOwnGoalTransformer(),
             AngleToGoalTransformer(),
         )
         assert records[0] == {
             "timestamp": timedelta(seconds=0.098),
+            "player_id": "6581",
+            "distance_to_goal": 52.044510877709286,
+            "distance_to_own_goal": 52.95947613506009,
             "angle_to_goal": 89.49633196102769,
         }

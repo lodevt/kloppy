@@ -82,17 +82,14 @@ class DistanceToGoalTransformer(EventAttributeTransformer):
         if not event.coordinates:
             return {"distance_to_goal": None}
 
-        event_x = event.coordinates.x
-        event_y = event.coordinates.y
         goal_x = metadata.pitch_dimensions.x_dim.max
         goal_y = (
             metadata.pitch_dimensions.y_dim.max
             + metadata.pitch_dimensions.y_dim.min
         ) / 2
-
         return {
-            "distance_to_goal": math.sqrt(
-                (goal_x - event_x) ** 2 + (goal_y - event_y) ** 2
+            "distance_to_goal": metadata.pitch_dimensions.distance_between(
+                event.coordinates, Point(goal_x, goal_y)
             )
         }
 
@@ -103,18 +100,14 @@ class DistanceToOwnGoalTransformer(EventAttributeTransformer):
 
         if not event.coordinates:
             return {"distance_to_own_goal": None}
-
-        event_x = event.coordinates.x
-        event_y = event.coordinates.y
         goal_x = metadata.pitch_dimensions.x_dim.min
         goal_y = (
             metadata.pitch_dimensions.y_dim.max
             + metadata.pitch_dimensions.y_dim.min
         ) / 2
-
         return {
-            "distance_to_own_goal": math.sqrt(
-                (goal_x - event_x) ** 2 + (goal_y - event_y) ** 2
+            "distance_to_own_goal": metadata.pitch_dimensions.distance_between(
+                event.coordinates, Point(goal_x, goal_y)
             )
         }
 
